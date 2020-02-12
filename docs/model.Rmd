@@ -2,6 +2,8 @@
 title: "Fluvial meta-ecosystem modelling"
 author: "Matthew Talluto"
 date: "10/02/2020"
+fig_width: 8
+fig_height: 8
 output:
   slidy_presentation:
     theme: paper # lumen also nice
@@ -16,13 +18,13 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## A simple (single-species) metapopulation model
 
-$$ \frac{\partial N}{\partial t} = Nc \left( H-N \right) - mN$$
+$$ \frac{\partial p}{\partial t} = cp \left( h-p \right) - pm$$
 
-This model is non-spatial, assumes infinite dispersal, and no (or identical) niches.
+This model is non-spatial, assumes infinite dispersal, and all patches are identical in quality.
 
-- $N$: number of occupied patches
+- $p$: number of occupied patches
 - $c$: colonisation rate
-- $H$: number of available patches
+- $h$: number of available patches
 - $m$: extinction rate
 
 
@@ -31,20 +33,38 @@ This model is non-spatial, assumes infinite dispersal, and no (or identical) nic
 
 ## A simple (single-species) metapopulation model
 
-$$ \frac{\partial N}{\partial t} = Nc \left( H-N \right) - mN$$
+$$ \frac{\partial p}{\partial t} = cp \left( h-p \right) - pm$$
 
 This model is non-spatial, assumes infinite dispersal, and no (or identical) niches.
 
-- $Nc$: colonisation depends on prevalence; more occupancy means more propagules, faster colonisation
-- $H-N$: only unoccupied patches can be colonised
-- $mN$: only occupied patches can experience extinction
+- $cp$: colonisation depends on prevalence; more occupancy means more propagules, faster colonisation
+- $h-p$: only unoccupied patches can be colonised
+- $pm$: only occupied patches can experience extinction
 
 
 
 
+## Extending to metacommunities
+
+- For species $i$ competing with a second species $j$
+
+$$ \frac{\partial p_i}{\partial t} = c_i p_i \left( h-p_i \right) - p_i \left( m_{ij}p_j + m_i \right)$$
+
+- Colonisation hasn't changed and is unaffected by competition
+- The extinction rate $m$ now has two components
+    - Competitive exclusion in patches where they co-occur: $m_{ij}p_j$
+    - Stochastic extinctions that add to extinction everywhere $i$ occurs: $m_i \left(h-p_j \right)$
+
+<br/>
+<br/>
+**Extending to multiple species**
+
+For $S$ species in a metacommunity (and where $S \setminus \left\{i \right\}$ is the set of species excluding $i$):
+
+$$ \frac{\partial p_i}{\partial t} = c_i p_i \left( h-p_i \right) - p_i \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ij}p_j} + m_i \right)$$
 
 
-
+<p class="reference">Hunt, Julia J. F. G., and Michael B. Bonsall. The Effects of Colonization, Extinction and Competition on Co-Existence in Metacommunities. Journal of Animal Ecology, vol. 78, no. 4, 2009, pp. 866–879</p>
 
 
 ## Making the model spatial
@@ -115,18 +135,42 @@ $$
 - So far the model is neutral; there is no difference in patch quality
 - Species in nature can exploit resources with differing abilities
 
-```{r fig.height = 4, fig.width = 4, fig.align = "center"}
-col <- "#08306b77"
-lcol <- "#08306b"
-xl <- -7
-xu <- 7
+```{r fig.align = "center"}
+suppressWarnings(library(ggplot2))
+suppressWarnings(library(data.table))
+suppressWarnings(library(RColorBrewer))
+
+xl <- -9
+xu <- 9
+
 x <- seq(xl, xu, length.out=1000)
-y <- dnorm(x, 0, 2)
-xx <- c(x, rev(x))
-yy <- c(y, rep(-1, length(x)))
-par(bty='n', mar=c(2,2,0,0), mgp=c(1,0.1,0))
-plot(0,0, xlim = c(xl, xu), ylim=range(y), type='n', xaxt='n', yaxt='n', xlab="Resource Value", ylab = "Fitness")
-polygon(xx, yy, col=col, border=lcol)
+
+# set up colors
+lpal <- c(brewer.pal(6, "Blues")[4:6], "#cb181d", "#6A2444", "#4d004b")
+fpal <- paste0(lpal, "77")
+fpal2 <- paste0(lpal, c(rep('22', 4), '77', '77'))
+names(lpal) <- names(fpal) <- names(fpal2) <- c(paste0("s", 1:3), 'r', 's2_r', 's1_r')
+
+
+fs1 <- function(x) dnorm(x, -2, 2)
+fs2 <- function(x) dnorm(x, 0, 2)
+fs3 <- function(x) dnorm(x, 2, 2)
+fr <- function(x) dnorm(x, 2, 2)
+
+## point where sp2 and resources cross
+xpt_r_sp2 <- uniroot(function(x) fs2(x) - fr(x), c(xl, xu))$root
+
+dat <- data.table(x = x)
+dat[,c("s1", "s2", "s3", "r") := .(fs1(x), fs2(x), fs3(x), fr(x))]
+
+pl0 <- ggplot(dat) + theme_minimal() + 
+	scale_y_continuous(name="Density/Fitness", limits = c(0, max(dat$s1,dat$s2, dat$s3))) + 
+	scale_x_continuous(name="Resource Value", limits = c(xl, xu)) + 
+	theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(), 
+		axis.text.y=element_blank(), axis.ticks.y=element_blank())
+
+pl_sp2 <- pl0 + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"]) 
+pl_sp2
 ```
 
 
@@ -136,18 +180,9 @@ polygon(xx, yy, col=col, border=lcol)
 
 - Patches likewise can be expected to have a distribution of resources
 
-```{r fig.height = 4, fig.width = 4, fig.align = "center"}
-p_col <- "#cb181d77"
-p_lcol <- "#cb181d"
-p_y <- dnorm(x, 2, 2)
-p_yy <- c(p_y, rep(-1, length(x)))
-par(bty='n', mar=c(2,2,0,2), mgp=c(1,0.1,0))
-plot(0,0, xlim = c(xl, xu), ylim=range(y), type='n', axes = FALSE, xlab="", ylab = "")
-axis(side = 1, tick = FALSE, labels = FALSE)
-mtext("Resource Value", side = 1, line = 1)
-axis(side = 2, tick = FALSE, labels = FALSE)
-mtext("Density", side = 2, line = 1, col=p_lcol)
-polygon(xx, p_yy, col=p_col, border=p_lcol)
+```{r fig.align = "center"}
+pl_r <- pl0 + geom_polygon(aes(x=x, y=r), color=lpal["r"], fill=fpal["r"]) 
+pl_r
 ```
 
 
@@ -157,25 +192,31 @@ polygon(xx, p_yy, col=p_col, border=p_lcol)
 
 ## Adding niches
 
-- The area of overlap is the fitness of the species in the patch $\omega_y$
+- A given target species will have some available resources it can use better than others
 
-```{r fig.height = 4, fig.width = 4, fig.align = "center"}
+```{r fig.align = "center"}
 ## note, this is easy to compute. If both are probability distributions with PDF f(x) and g(x) and CDFs F(x) and G(x), and they cross at x = c
 ## then the overlap area is just 1 - F(c) + G(c), assuming F(x) is the left curve
 
-par(bty='n', mar=c(2,2,0,2), mgp=c(1,0.1,0))
-plot(0,0, xlim = c(xl, xu), ylim=range(y), type='n', axes = FALSE, xlab="", ylab = "")
-axis(side = 1, tick = FALSE, labels = FALSE)
-mtext("Resource Value", side = 1, line = 1)
-axis(side = 2, tick = FALSE, labels = FALSE)
-mtext("Density", side = 2, line = 1, col=p_lcol)
-axis(side = 2, tick = FALSE, labels = FALSE)
-mtext("Fitness", side = 4, line = 1, col=lcol)
-polygon(xx, yy, col=col, border=lcol)
-polygon(xx, p_yy, col=p_col, border=p_lcol)
+pl_s2_r <- pl_r + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"])
+pl_s2_r
 ```
 
-- We add the patch quality term to the colonisation rate:
+## Adding niches
+
+- The area of overlap is the fitness of the species in the patch ($\omega_y$).
+
+```{r fig.align = "center"}
+dat.overlap <- data.table(x = x)
+dat.overlap[,y := fr(x)]
+dat.overlap[x >= xpt_r_sp2, y := fs2(x)]
+pl_s2_r_ol <- pl0 + geom_polygon(aes(x=x, y=r), color=lpal["r"], fill=fpal2["r"]) + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal2["s2"]) + 
+	geom_polygon(dat = dat.overlap, aes(x=x, y=y), color=lpal["s2_r"], fill=fpal["s2_r"]) 
+pl_s2_r_ol
+```
+
+
+- We add this as a patch quality term to the colonisation rate:
 
 $$ c = \omega_y \left( \vect{Q_y} \alpha + \beta \right)$$
 
@@ -190,23 +231,15 @@ $$ c = \omega_y \left( \vect{Q_y} \alpha + \beta \right)$$
 - To make a metacommunity model, we consider multiple species, each with distinct niches
 
 
-```{r fig.height = 4, fig.width = 4, fig.align = "center"}
-library(RColorBrewer)
-lcols <- brewer.pal(6, "Blues")[4:6]
-cols <- paste0(lcols, '66')
-centres <- c(-2, 0, 2)
-y_s <- lapply(centres, function(m) dnorm(x, m, 2))
-yy_s <- lapply(y_s, function(d) c(d, rep(-1, length(x))))
-par(bty='n', mar=c(2,2,0,2), mgp=c(1,0.1,0))
-plot(0,0, xlim = c(xl, xu), ylim=range(y), type='n', axes = FALSE, xlab="", ylab = "")
-axis(side = 1, tick = FALSE, labels = FALSE)
-mtext("Resource Value", side = 1, line = 1)
-axis(side = 2, tick = FALSE, labels = FALSE)
-mtext("Fitness", side = 2, line = 1, col=lcol)
-dead <- mapply(function(ym, cfil, clin) polygon(xx, ym, col=cfil, border=clin), ym = yy_s, cfil = cols, clin = lcols)
+```{r fig.align = "center"}
+
+pl_allsp <- pl0 + geom_polygon(aes(x=x, y=s1), color=lpal["s1"], fill=fpal["s1"]) + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"]) + 
+	geom_polygon(aes(x=x, y=s3), color=lpal["s3"], fill=fpal["s3"]) 
+pl_allsp
 ```
 
-- For a focal species, the overlapping area is the strength of competition with other species in the community.
+
+
 
 
 
@@ -214,7 +247,44 @@ dead <- mapply(function(ym, cfil, clin) polygon(xx, ym, col=cfil, border=clin), 
 
 ## Competition
 
-However, resources must also be present.
+- For a focal species $i$ with fitness $\omega_{y,i}$
+```{r fig.align = "center"}
+pl_comp <- pl_s2_r_ol + geom_path(aes(x=x, y = s2), color = lpal['s2']) + 
+	annotate("text", x = 1.2*xpt_r_sp2, y = 0.65*max(dat$s2), label="omega[list(y,i)]", parse=TRUE, size=8)
+pl_comp
+```
+
+
+## Competition
+
+- For a focal species $i$ with fitness $\omega_{y,i}$
+```{r fig.align = "center"}
+xpt_r_sp1 <- uniroot(function(x) fs1(x) - fr(x), c(xl, xu))$root
+dat_overlap1 <- data.table(x = x)
+dat_overlap1[,y := fr(x)]
+dat_overlap1[x >= xpt_r_sp1, y := fs1(x)]
+
+pl_comp_r <- pl_comp + geom_polygon(aes(x=x, y=s1), color=fpal2["s1"], fill=fpal2["s1"]) + geom_polygon(dat = dat_overlap1, aes(x=x, y=y), color=lpal["s1_r"], fill=fpal["s1_r"]) +
+	annotate("text", x = xpt_r_sp1, y = 0.2*max(dat$s2), label="gamma[list(y,i,j)]", parse=TRUE, size=7)
+pl_comp_r
+```
+
+- Adding a species will result in some resources ($\gamma_{y,i,j}$) coming under competition
+
+- The ratio $\frac{\gamma_{y,i,j}}{\omega_{y,i}}$ is the relative strength of competition
+
+
+
+
+
+
+
+
+
+
+## Competition
+
+- With 
 
 if $\omega_i$ is the overlap of the niche of species $i$ with the resources in a patch, and $\gamma_{i,j}$ is the overlap of the niches of both $i$ and $j$ with the resources of a patch, then $\frac{\gamma_{i,j}}{\omega_i}$ is a simple model for the strength of competition; the proportion of resources that are in competition with the two species.
 

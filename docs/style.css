@@ -7,3 +7,10 @@ h1, .h1, h2, .h2, h3, .h3 {
     position: fixed;
     font-size: small;
 }
+
+.bullet2 {
+	margin-left: 100px;
+	margin-top: -20px;
+	margin-bottom: 20px;
+	font-size: smaller;
+}

@@ -8,13 +8,49 @@ output:
   slidy_presentation:
     theme: paper # lumen also nice
     css: style.css
+    toc_depth: 2
 #    incremental: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
-\newcommand{\vect}[1]{\mathrm{\mathbf{#1}}}
+
+
+
+## Motivation
+
+<center>
+![](img/mot1.png){width=80%}
+</center>
+
+## Motivation
+
+<center>
+![](img/mot2.png){width=80%}
+</center>
+
+## Motivation
+
+<center>
+![](img/mot3.png){width=80%}
+</center>
+
+## Motivation
+
+<center>
+![](img/mot4.png){width=80%}
+</center>
+
+## Motivation
+
+<center>
+![](img/mot5.png){width=80%}
+</center>
+
+
+
+
 
 ## A simple (single-species) metapopulation model
 
@@ -35,7 +71,7 @@ This model is non-spatial, assumes infinite dispersal, and all patches are ident
 
 $$ \frac{\partial p}{\partial t} = cp \left( h-p \right) - pm$$
 
-This model is non-spatial, assumes infinite dispersal, and no (or identical) niches.
+This model is non-spatial, assumes infinite dispersal, and all patches are identical in quality.
 
 - $cp$: colonisation depends on prevalence; more occupancy means more propagules, faster colonisation
 - $h-p$: only unoccupied patches can be colonised
@@ -52,88 +88,118 @@ $$ \frac{\partial p_i}{\partial t} = c_i p_i \left( h-p_i \right) - p_i \left( m
 
 - Colonisation hasn't changed and is unaffected by competition
 - The extinction rate $m$ now has two components
-    - Competitive exclusion in patches where they co-occur: $m_{ij}p_j$
-    - Stochastic extinctions that add to extinction everywhere $i$ occurs: $m_i \left(h-p_j \right)$
 
-<br/>
-<br/>
-**Extending to multiple species**
-
-For $S$ species in a metacommunity (and where $S \setminus \left\{i \right\}$ is the set of species excluding $i$):
-
-$$ \frac{\partial p_i}{\partial t} = c_i p_i \left( h-p_i \right) - p_i \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ij}p_j} + m_i \right)$$
+<p class="bullet2">Competitive exclusion in patches where they co-occur: $m_{ij}p_j$</p>
+<p class="bullet2">Stochastic extinctions that add to extinction everywhere $i$ occurs: $m_i$</p>
 
 
 <p class="reference">Hunt, Julia J. F. G., and Michael B. Bonsall. The Effects of Colonization, Extinction and Competition on Co-Existence in Metacommunities. Journal of Animal Ecology, vol. 78, no. 4, 2009, pp. 866–879</p>
 
+## Extending to metacommunities
 
-## Making the model spatial
+For $S$ species in a metacommunity <br/>
+(and where $S \setminus \left\{i \right\}$ is the set of species excluding $i$):
 
-$$ \frac{\partial N}{\partial t} = Nc \left( H-N \right) - mN $$
+$$ \frac{\partial p_i}{\partial t} = c_i p_i \left( h-p_i \right) - p_i \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ij}p_j} + m_i \right)$$
 
-We define the state of patch $y$ at time $t$ by a state vector $\vect{X_{y,t}} \in \{ 0, 1 \}$.
 
-It can take two states, occupied and unoccupied.
+## Incorporating patch quality
+
+- Goal: include patch quality in a way that allows for feedbacks with reaction-transport model
+
+
+## Incorporating patch quality
+
+- Goal: include patch quality in a way that allows for feedbacks with reaction-transport model
+- For a patch $x$ with habitat quality $q$:
+
+\begin{align}
+	\frac{\partial p_{ix}}{\partial t} &= c_{ix} p_{ix} \left( h-p_{ix} \right) - p_{ix} \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ijx}p_{jx}} + m_{ix} \right) \\
+	c_{ix} &= f(q_{ix}) \\
+	m_{ix} &= g(q_{ix})
+\end{align}
+
+- This model is now spatially explicit and incorporates different niches for each species
+- Note that in pratice, it doesn't make sense to talk about a rate for a specific patch, so we convert to probabilities of colonisation/extinction
+
+<p class="reference">Talluto et al. 2017. Nature Ecol. Evol.</p>
+
+## Incorporating patch quality
+
+\begin{align}
+	c_{ix} &= f(q_{ix}) \\
+	m_{ix} &= g(q_{ix})
+\end{align}
+
+- $c$ and $m$ functions are flexible
+
+For example, we used them to link C-E dynamics to climate:
+
+![](img/respCurve.png){ width=30% } ![](img/stm_equilib.png){ width=30% }
+
+<p class="reference">Talluto et al. 2017. Nature Ecol. Evol.</p>
+
+
+## Adding Feedbacks
 
 <center>
-![](img/patch1.png){ width=30% }
+![](img/mot5.png){width=80%}
 </center>
 
 
 
+## Adding Feedbacks
 
+- Starting with a reaction transport model with state variable $R$ (a resource)
+- Include a **resource use function**, $\rho_i(R)$, which is the effect of species $i$ on the resource
 
-
-## Transition rates
-$$ \frac{\partial N}{\partial t} = Nc \left( H-N \right) - mN $$
-
-- Unoccupied patches become occupied at the rate $Nc$, 
-- Occupied patches go extinct at rate $m$. 
-- To make this rate local, use $N_y$, the number of patches neighbouring patch $y$ that are occupied.
-
-<center style="margin-top:50px">
-![](img/patch2.png){width=80%}
-</center>
+\begin{align}
+	\frac{\partial R}{\partial t} &= \sum_{i \in S}{\rho_i(R)} -\frac{QR - Q_u R_u}{A dx}
+\end{align}
 
 
 
 
+## Adding Feedbacks
 
-## More realistic dispersal
-
-<center style="margin-top:50px">
-![](img/patch_col.png){width=30%}
-</center>
+- Starting with a reaction transport model with state variable $R$ (a resource)
+- Include a **resource use function**, $\rho_i(R)$, which is the effect of species $i$ on the resource
 
 
-- In a river, we can further incorporate and active and a passive component to dispersal by splitting apart the colonisation rate $c$:
-
-$$
-	c = \vect{Q_y} \alpha + \beta
-$$
-
-- $\vect{N_y}$: vector of presence-absence in all patches that are neighbours of patch $y$
-- $\vect{Q_y}$: vector of discharge *into* the patch from neighbours (0 for downstream patches)
-- $\alpha$: passive dispersal ability of the species
-- $\beta$: active dispersal ability of the species.
-- This gives a colonisation rate $= \vect{N_y} \left( \vect{Q_y} \alpha + \beta \right)$
+\begin{align}
+	\frac{\partial R}{\partial t} &= \sum_{i \in S}{\rho_i(R)} -\frac{QR - Q_u R_u}{A dx} \\
+	\frac{\partial p_{ix}}{\partial t} &= c_{ix} p_{ix} \left( h-p_{ix} \right) - p_{ix} \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ijx}p_{jx}} + m_{ix} \right) \\
+	c_{ix} &= f(q_{ix}) \\
+	m_{ix} &= g(q_{ix}) \\
+	q_{ix} &= F_i(R_x)
+\end{align}
 
 
+## Adding Feedbacks
+
+- Starting with a reaction transport model with state variable $R$ (a resource)
+- Include a **resource use function**, $\rho_i(R)$, which is the effect of species $i$ on the resource
 
 
-##
+\begin{align}
+	\frac{\partial R}{\partial t} &= \sum_{i \in S}{\rho_i(R)} -\frac{QR - Q_u R_u}{A dx} \\
+	\frac{\partial p_{ix}}{\partial t} &= c_{ix} p_{ix} \left( h-p_{ix} \right) - p_{ix} \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ijx}p_{jx}} + m_{ix} \right) \\
+	c_{ix} &= f(q_{ix}) \\
+	m_{ix} &= g(q_{ix}) \\
+	q_{ix} &= F_i(R_x)
+\end{align}
 
-<center style="margin-top:50px">
-![](img/patch_dispersal.png){width=80%}
-</center>
+-Two questions remain:
+
+<p class="bullet2">How to define the strength of competition $m_{ix}$?</p>
+<p class="bullet2">How to connect patch quality $q$ with resources $R$?</p>
 
 
 
 
-## Adding niches
+## Patch Quality
 
-- So far the model is neutral; there is no difference in patch quality
-- Species in nature can exploit resources with differing abilities
+Imagine that $R$ represents, instead of a point value, a *distribution* of resources in a patch
 
 ```{r fig.align = "center"}
 suppressWarnings(library(ggplot2))
@@ -169,30 +235,28 @@ pl0 <- ggplot(dat) + theme_minimal() +
 	theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(), 
 		axis.text.y=element_blank(), axis.ticks.y=element_blank())
 
+pl_r <- pl0 + geom_polygon(aes(x=x, y=r), color=lpal["r"], fill=fpal["r"]) 
+pl_r
+
+```
+
+
+## Patch Quality
+
+Similarly, a species' niche can be characterized by a gaussian fitness function $\omega_i(R)$, showing how well it does under certain resource regimes
+
+```{r fig.align = "center"}
+
 pl_sp2 <- pl0 + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"]) 
 pl_sp2
 ```
 
 
 
+## Patch Quality
 
-## Adding niches
+Patch quality $q_{ix}$ then is the overlap between the resource distribution $R_x$ and the fitness function $\omega_i(R)$
 
-- Patches likewise can be expected to have a distribution of resources
-
-```{r fig.align = "center"}
-pl_r <- pl0 + geom_polygon(aes(x=x, y=r), color=lpal["r"], fill=fpal["r"]) 
-pl_r
-```
-
-
-
-
-
-
-## Adding niches
-
-- A given target species will have some available resources it can use better than others
 
 ```{r fig.align = "center"}
 ## note, this is easy to compute. If both are probability distributions with PDF f(x) and g(x) and CDFs F(x) and G(x), and they cross at x = c
@@ -202,9 +266,11 @@ pl_s2_r <- pl_r + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"]
 pl_s2_r
 ```
 
-## Adding niches
 
-- The area of overlap is the fitness of the species in the patch ($\omega_y$).
+## Patch Quality
+
+Patch quality $q_{ix}$ then is the overlap between the resource distribution $R_x$ and the fitness function $\omega_i(R)$
+
 
 ```{r fig.align = "center"}
 dat.overlap <- data.table(x = x)
@@ -216,26 +282,22 @@ pl_s2_r_ol
 ```
 
 
-- We add this as a patch quality term to the colonisation rate:
-
-$$ c = \omega_y \left( \vect{Q_y} \alpha + \beta \right)$$
-
-
-
 
 
 
 ## Competition
 
-- So far, we have a metapopulation model
-- To make a metacommunity model, we consider multiple species, each with distinct niches
+- The strength of competition is similar
 
+## Competition
+
+- The strength of competition is similar
+- For species $i$ and $j$ with fitness functions $\omega_i(R)$ and $\omega_j(R)$, the overlap between the functions is competition strength $m_{ij}$
 
 ```{r fig.align = "center"}
 
-pl_allsp <- pl0 + geom_polygon(aes(x=x, y=s1), color=lpal["s1"], fill=fpal["s1"]) + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"]) + 
-	geom_polygon(aes(x=x, y=s3), color=lpal["s3"], fill=fpal["s3"]) 
-pl_allsp
+pl_sp1_sp2 <- pl0 + geom_polygon(aes(x=x, y=s1), color=lpal["s1"], fill=fpal["s1"]) + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"]) 
+pl_sp1_sp2
 ```
 
 
@@ -243,50 +305,18 @@ pl_allsp
 
 
 
+## To-do
 
+### Dispersal component
+<!-- note here; one possibility is to use quality q_ix as a proxy for how much the species uses -->
+<!-- then change the mean of the resources by some amount, proportional to the overlap -->
+<!-- thus species that are in good quality patches will have a bigger effect (they are more abundant) -->
+<!-- \mu_new = \mu_old + q_ix * \alpha -->
+<!-- where alpha is the maximal effect of the species on the resource -->
+<!-- This might also be something to go to the literature on, or ask Ruben/Gabriel  -->
 
-## Competition
+### Revise \& finalise model
+<p class="bullet2">How does a species affect resources in a patch? Need to choose the resource use function  $\rho_i(R)$</p>
 
-- For a focal species $i$ with fitness $\omega_{y,i}$
-```{r fig.align = "center"}
-pl_comp <- pl_s2_r_ol + geom_path(aes(x=x, y = s2), color = lpal['s2']) + 
-	annotate("text", x = 1.2*xpt_r_sp2, y = 0.65*max(dat$s2), label="omega[list(y,i)]", parse=TRUE, size=8)
-pl_comp
-```
-
-
-## Competition
-
-- For a focal species $i$ with fitness $\omega_{y,i}$
-```{r fig.align = "center"}
-xpt_r_sp1 <- uniroot(function(x) fs1(x) - fr(x), c(xl, xu))$root
-dat_overlap1 <- data.table(x = x)
-dat_overlap1[,y := fr(x)]
-dat_overlap1[x >= xpt_r_sp1, y := fs1(x)]
-
-pl_comp_r <- pl_comp + geom_polygon(aes(x=x, y=s1), color=fpal2["s1"], fill=fpal2["s1"]) + geom_polygon(dat = dat_overlap1, aes(x=x, y=y), color=lpal["s1_r"], fill=fpal["s1_r"]) +
-	annotate("text", x = xpt_r_sp1, y = 0.2*max(dat$s2), label="gamma[list(y,i,j)]", parse=TRUE, size=7)
-pl_comp_r
-```
-
-- Adding a species will result in some resources ($\gamma_{y,i,j}$) coming under competition
-
-- The ratio $\frac{\gamma_{y,i,j}}{\omega_{y,i}}$ is the relative strength of competition
-
-
-
-
-
-
-
-
-
-
-## Competition
-
-- With 
-
-if $\omega_i$ is the overlap of the niche of species $i$ with the resources in a patch, and $\gamma_{i,j}$ is the overlap of the niches of both $i$ and $j$ with the resources of a patch, then $\frac{\gamma_{i,j}}{\omega_i}$ is a simple model for the strength of competition; the proportion of resources that are in competition with the two species.
-
-Can extend this to all species, either by summing (in which case the sums of all overlaps could be much greater than 1), or by taking just the overlap with any species
-
+### Decide on starting conditions
+### Decide on scenarios and hypotheses

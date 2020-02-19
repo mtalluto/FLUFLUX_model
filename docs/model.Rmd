@@ -302,18 +302,23 @@ pl_sp1_sp2
 
 
 
-
-
-
-## To-do
-
-### Dispersal component
+## Dispersal
 <!-- note here; one possibility is to use quality q_ix as a proxy for how much the species uses -->
 <!-- then change the mean of the resources by some amount, proportional to the overlap -->
 <!-- thus species that are in good quality patches will have a bigger effect (they are more abundant) -->
 <!-- \mu_new = \mu_old + q_ix * \alpha -->
 <!-- where alpha is the maximal effect of the species on the resource -->
 <!-- This might also be something to go to the literature on, or ask Ruben/Gabriel  -->
+
+- The metapopulation model has the colonisation term $c_{ix}p_{ix}$
+- The $p$ term represents dispersal
+- To better represent dispersal in streams we can add active ($\alpha$) and passive ($\beta$) dispersal
+
+$$ p_{ix}\left(\alpha_i + \sum{Q_y\beta_i}\right)$$
+
+
+## To-do
+
 
 ### Revise \& finalise model
 <p class="bullet2">How does a species affect resources in a patch? Need to choose the resource use function  $\rho_i(R)$</p>

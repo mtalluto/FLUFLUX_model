@@ -1,0 +1,177 @@
+% XeLaTeX template for scientific papers using biblatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+
+\usepackage{titlesec}
+\titleformat*{\section}{\Large\bfseries}
+\titleformat*{\subsection}{\bfseries}
+
+% left align title author blocks
+\usepackage{titling}
+\pretitle{\begin{flushleft} \Large}
+\posttitle{\end{flushleft}}
+\preauthor{\begin{flushleft}}
+\postauthor{\end{flushleft}}
+
+% suppress date
+\predate{}
+\postdate{}
+\date{}
+
+% left aligned abstract and title
+\renewenvironment{abstract}
+  {{\bfseries\noindent{\abstractname}\par\noindent}}
+  
+
+
+% fonts
+\usepackage{fontspec}
+\setmainfont{Adobe Text Pro}
+% \setmainfont{Georgia}  % another nice option
+\setsansfont{Source Sans Pro}
+
+\usepackage{amsmath}
+
+% biblatex
+\usepackage[style=authoryear,backend=biber, uniquelist=false, minbibnames=5, maxbibnames=5, 
+		isbn=false,url=false]{biblatex}  
+\addbibresource{biblio.bib}	% fill in the name of the .bib file
+\renewbibmacro{in:}{}
+\DeclareFieldFormat[article]{title}{#1}  %% removes quotes from article titles
+
+\usepackage{authblk} 
+
+\usepackage{graphicx}
+
+
+\usepackage[nolist,nohyperlinks]{acronym}
+
+
+%%%% OPTIONS TO ENABLE FOR A FINAL (SUBMISSION) DRAFT
+% \usepackage{setspace}
+% \doublespacing
+% \usepackage{lineno}
+% \renewcommand\linenumberfont{\normalfont\small\sffamily}
+% \linenumbers
+% \usepackage[nomarkers]{endfloat} %% Enable this to have all figures and tables appear at the end of the ms
+
+
+
+
+%% ----------------------------------
+%
+%     Title and authorship information
+%
+%% ----------------------------------
+
+\title{Article title}
+\author[1,*]{Matthew V. Talluto (matthew.talluto@uibk.ac.at)}
+\author[2]{Second Author}
+\affil[1]{Department of Ecology, University of Innsbruck}
+\affil[2]{Second affiliation}
+\affil[*]{Author for correspondence. Address: 
+	\protect\\ \hspace{3em} University of Innsbruck 
+	\protect\\ \hspace{3em} Department of Ecology 
+	\protect\\ \hspace{3em} Technikerstrasse 25 
+	\protect\\ \hspace{3em} A-6020 Innsbruck, Austria
+	\protect\\ \hspace{3em} tel: +43 (0)512 507-51738}
+
+\begin{document}
+
+\begin{acronym}
+	\newacro{fme}[FME]{fluvial meta-ecosystem}
+\end{acronym}
+
+
+\begin{titlepage}
+	\maketitle
+	\begin{flushleft}
+		\textbf{Paper type:} \\
+		\textbf{Short title:} \\
+		\textbf{Keywords:} keyword list
+	\end{flushleft}
+
+	\begin{abstract}
+		Abstract here
+	\end{abstract}
+\end{titlepage}
+
+\section*{Introduction}
+
+- Blah blah metaecosystems, explicit modelling, rivers
+
+- Paragraph 2
+
+- Paragraph 3
+
+Much work connecting diversity with ecosystem functioning is conducted at the scale of local ecosystems.
+Meta-ecosystems in general, and in particular \acp{fme}, however, connect multiple ecosystems across much larger scales (e.g., an entire fluvial network).
+Biodiversity-ecosystem functioning relationships are likely quite scale dependent \autocite{Gonzalez2020}, and thus models that integrate the relevant processes from local to meta-ecosystem scales are needed to better understand both local and regional dynamics.
+
+Here, we develop a model for \acp{fme} that incorporates the movement and distribution of non-biological material as well as the distribution of species in a biological community.
+We construct this model by coupling two commonly-used model types in fluvial ecosystem and community ecology: reaction-transport models (for the non-biological component), and meta-community models (for species).
+By linking these two models, we allow for feedbacks between the biological community and resources.
+These feedbacks are essential to enable a more mechanistic understanding of the connections between the processes underlying community assembly, resulting biodiversity patterns, and ecosystem function.
+
+\section*{Materials \& Methods}
+{}
+\subsection*{Model Description}
+
+Our conceptual starting point for modelling the biological community is metapopulation theory \cite{Levins1969}.
+The classic metapopulation model tracks the number of occupied patches $p$ in a landscape composed of $h$ available patches as a function of the rates of colonisation and extinction of local populations within those patches:
+
+\begin{equation}
+	\frac{dp}{dt} = cp \left( h - p \right) - pm \label{eq:levins}
+\end{equation}
+
+Occupied patches ($p$) experience extinction according to the extinction rate $m$, while unoccupied patches ($h-p$) are colonised according to the colonisation rate $c$. 
+The additional $p$ in the colonisation term takes dispersal into account; as more patches are occupied in the metapopulation as a whole, unoccupied patches are colonised more quickly due to increased dispersal from the occupied patches.
+
+\textcite{Hunt2009} extended this model to multi-species communities by adding competition to the extinction term:
+
+\begin{equation}
+	\frac{\partial p_i}{\partial t} = c_i p_i \left( h-p_i \right) - p_i \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ij}p_j} + m_i \right) \label{eq:hunt}
+\end{equation}
+
+where the subscript $i$ indicates a focal species, the subscript $j$ a competitor, and $S \setminus \left\{i \right\}$ is the set of species in the local community excluding the focal species $i$.
+Here, the extinction rate is now broken into two terms.
+The first a species-specific intrinsic extinction rate $m_i$, representing, e.g., stochastic extinctions that are unrelated to other species in the local community.
+The $m_{ij}$ term is the effect of competition between $i$ and $j$ on the extinction rate of $i$ (multiplied by $p_j$ because competition only occurs when species $j$ is also present).
+For future clarity of notation, we assume all parameters are specific to a target species $i$ and thus omit the subscript.
+
+In order to produce a useful model where the meta-community interacts with the environment, it is necessary to further extend this model to incorporate local (and potentially dynamic) non-biological conditions in specific patches.
+More recent theoretical \autocite{Holt2000,Holt2005} and empirical \autocite{Talluto2017} work has extended the single-species Levins model (eqn. \ref{eq:levins}) by fitting the colonisation and extinction rates as functions of local climatic conditions.
+The result is a dynamic range model with long-term occupancy driven by the balance of local colonisation and extinction \autocite{Talluto2017}.
+We combine this approach with the multi-species Hunt model (\ref{eq:hunt}) by redefining the $c$ and $m$ terms to be functions of the quality $q_x$ of a focal patch $x$:
+
+\begin{align}
+	c_{x} &= f(q_{x}) \label{eq:talluto} \\
+	m_{x} &= g(q_{x})
+\end{align}
+
+The shapes of these two functions is flexible; \textcite{Talluto2017} defined them as quadratic functions of local climate conditions.
+Our more general approach here can incorporate climatic conditions, local habitat, and dynamical resource concentrations into the $q$ term.
+We explore these possibilities further in the case studies.
+For now, we consider the case where $q_x = R_x$, the concentration of an essential resource.
+We can use a simple reaction-transport model (cite) to describe the fluctuations of this resource concentration in time (the subscript $x$ has been omitted for clarity).
+
+\begin{equation}
+	\frac{\partial R}{\partial t} = \sum_{i \in S}{\rho_i(R)} -\frac{QR - \sum Q_u R_u}{A l} 
+	\label{eq:rxn_transport}
+\end{equation}
+
+The right-hand term here gives loss due to advective transport, where $Q$ is the discharge of the focal patch (in volumetric units per unit time; we use $m^3 s^{-1}$ throughout), $Q_u$ and $R_u$ are discharge and resource concentrations of upstream patches (including lateral input, if relevant), $A$ is the cross-sectional area ($m^2$), and $l$ is the stream length of the patch ($m$).
+The left-hand term is the reaction component.
+We consider here only reaction due to biological activity, and postulate that the net reactive change in a patch is the sum of the set of resource use functions, $\rho_i(R)$, of all species $S$ in the local community. 
+
+\subsection*{Initial \& Boundary Conditions}
+
+\subsection*{Simulations}
+
+\section*{Results}
+
+\section*{Discussion}
+
+\printbibliography
+\end{document}

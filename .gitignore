@@ -1,3 +1,17 @@
+## latex files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.log
+*.run.xml
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.xdv
+tex/*.pdf
+
 # History files
 .Rhistory
 .Rapp.history

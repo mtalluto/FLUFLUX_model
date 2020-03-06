@@ -23,13 +23,14 @@
 \renewenvironment{abstract}
   {{\bfseries\noindent{\abstractname}\par\noindent}}
   
-
+\usepackage[UKenglish]{babel}
 
 % fonts
 \usepackage{fontspec}
-\setmainfont{Alegreya}
-% \setmainfont{Georgia}  % another nice option
+\setmainfont{Latin Modern Roman}
+% \setmainfont{Alegreya} % another nice option
 \setsansfont{Source Sans Pro}
+\setmonofont{Source Code Pro}
 
 \usepackage{amsmath}
 
@@ -89,6 +90,10 @@
 	\protect\\ \hspace{3em} A-6020 Innsbruck, Austria
 	\protect\\ \hspace{3em} tel: +43 (0)512 507-51738}
 
+
+%% just some outlining fanciness
+\newcommand{\fitem}[2]{\item {\bfseries #1} \\ #2}
+
 \begin{document}
 
 \begin{acronym}
@@ -111,32 +116,32 @@
 
 \section{Introduction}
 
-- Blah blah metaecosystems, explicit modelling, rivers
-
-- Paragraph 2
-
-- Paragraph 3
-
-Much work connecting diversity with ecosystem functioning is conducted at the scale of local ecosystems.
-Meta-ecosystems in general, and in particular \acp{fme}, however, connect multiple ecosystems across much larger scales (e.g., an entire fluvial network).
-Biodiversity-ecosystem functioning relationships are likely quite scale dependent \autocite{Gonzalez2020}, and thus models that integrate the relevant processes from local to meta-ecosystem scales are needed to better understand both local and regional dynamics.
-
-Fluvial ecosystems present unique problems for modelling.
 \begin{itemize}
-\item strong separation between river and surrounding matrix
-\item The hierarchical branching structure that dictates the movement of material and species can produce both quantitative and qualitative changes in the predictions of models when compared with terrestrial systems. For example, branching structure may promote ecosystem stability and act as a buffer against environmental change \autocite{Terui2018}.
-\item others?
-\end{itemize} 
+	\fitem{Intro paragraph; define FMEs, importance for biodiversity \& functioning}
+		{Much work connecting diversity with ecosystem functioning is conducted at the scale of local ecosystems.
+		Meta-ecosystems in general, and in particular \acp{fme}, however, connect multiple ecosystems across much larger scales (e.g., an entire fluvial network).
+		Biodiversity-ecosystem functioning relationships are likely quite scale dependent \autocite{Gonzalez2020}, and thus models that integrate the relevant processes from local to meta-ecosystem scales are needed to better understand both local and regional dynamics.}
+	\fitem{Fluvial ecosystems present unique problems for modelling.}
+		{The physical and geographical structure of river networks, imposes unique and strong controls on biological and resource fluxes in \acp{fme}.
+		Rivers are hierarchically branching and strongly interconnected via downstream flow of water.
+		Thus, the properties of this hierarchical structure can strongly influence how ecosystem components are distributed in space via structured spatial heterogeneity in resource supply (deriving, e.g., from structure in the surrounding terrrestrial landscape), spatially variable temporal synchronicity (e.g., variable flow affecting portions of the network), and constrained avenues for dispersal of organisms \autocite{Helton2018,BENDA2004,Heino2015}.
+		This hierarchical branching structure that dictates the movement of material and species can produce both quantitative and qualitative changes in the predictions of models when compared with terrestrial systems. 
+		For example, branching structure may promote ecosystem stability and act as a buffer against environmental change \autocite{Terui2018}.
+		This unique property of \acp{fme} also generates opportunities; models that are able to incorporate the structure of river networks are well-positioned to test hypotheses about how the spatial organisation of rivers influences meta-ecosystem properties such as alpha and beta diversity and resource fluxes at the scale of the entire river network.}
 
+	\fitem{Increasing data availability and need of models to catch up}
+		{The availability of comprehensive data on the biodiversity and resource components is rapidly increasing thanks to technological developments such as eDNA metabarcoding and high resolution mass spectrometry (other examples?) (cite).
+		These enable the creation of datasets that are unprecedented in both breadth---covering a great spatial extent, such as entire river networks---and depth---capturing much more biological and chemical diversity at a single site than has been possible \autocite{Altermatt2020}.
+		However, we still lack comprehensive theory and models that can provide the context for these datasets at the appropriate spatial scales \autocite{Gounand2018}.}
+	\fitem{Objectives/summary of paper}
+		{Here, we develop a model that explicitly couples the distribution and fluxes of both resources and species in \acp{fme}.
+		We construct this model by joining two commonly-used model types in fluvial ecosystem and community ecology: reaction-transport models (for the non-biological component), and meta-community models (for species).
+		By linking these two models, we allow for feedbacks between the biological community and resources.
+		These feedbacks are essential to enable a more mechanistic understanding of the connections between the processes underlying community assembly, resulting biodiversity patterns, and ecosystem function.
+		Moreover, the spatial structure of the river network allows us to test emergent properties related to the structure of the network.
+		For example, changes to network structure via damming can be evaluated in-silico, or theoretical predictions such as the relationship between branching complexity and ecosystem stability \autocite{Terui2018} can be evaluated.}
+\end{itemize}
 
-
-
-Here, we develop a model for \acp{fme} that incorporates the movement and distribution of non-biological material as well as the distribution of species in a biological community.
-We construct this model by coupling two commonly-used model types in fluvial ecosystem and community ecology: reaction-transport models (for the non-biological component), and meta-community models (for species).
-By linking these two models, we allow for feedbacks between the biological community and resources.
-These feedbacks are essential to enable a more mechanistic understanding of the connections between the processes underlying community assembly, resulting biodiversity patterns, and ecosystem function.
-Moreover, the spatial structure of the river network allows us to test emergent properties related to the structure of the network.
-For example, changes to network structure via damming can be evaluated in-silico, or theoretical predictions such as the relationship between branching complexity and ecosystem stability \autocite{Terui2018} can be evaluated.
 
 \section{Materials \& Methods}
 

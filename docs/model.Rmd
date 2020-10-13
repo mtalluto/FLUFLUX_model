@@ -1,7 +1,7 @@
 ---
-title: "Fluvial meta-ecosystem modelling"
+title: "FLUME: A platform for modelling FLUvial Meta-Ecosystems"
 author: "Matthew Talluto"
-date: "10/02/2020"
+date: "22.10.2020"
 fig_width: 8
 fig_height: 8
 output:
@@ -53,6 +53,10 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ## A simple (single-species) metapopulation model
+
+**START HERE**
+**simplify, streamline, harmonize terminology, add picture/diagram**
+**use igraph and flume examples already to draw a network of sites**
 
 $$ \frac{\partial p}{\partial t} = cp \left( h-p \right) - pm$$
 

@@ -175,9 +175,9 @@ text(-0.7, 0.17, "q, R", cex=0.8)
 
 * We are interested in the rate of change in the number of patches/reaches occupied by a focal species $i$. 
 * Unoccupied patches ($h-p$) can be colonised, occupied ones can go extinct.
-* Extinction is determined locally as the combination of intrinsic extinction rate and the effects of species interactions
+* Extinction is determined locally as the combination of intrinsic extinction rate
 
-$$	\frac{\partial p}{\partial t} = c p(\alpha + \beta Q) \left( h-p \right) - p \color{red}{\left( \sum_{j \in S \setminus \left\{i \right\} }{m_{j}p_j} + m \right)} $$
+$$	\frac{\partial p}{\partial t} = f(q,R) p(\alpha + \beta Q) \left( h-p \right) - p \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{j}p_j} + \color{red}m \right) $$
 </div>
 <div class='right' style='float:left;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
@@ -189,6 +189,7 @@ arrows(-0.35, -0.15, -0.35, 0.07,  length=0.1)
 text(-0.25, -0.1, expression(alpha), cex=0.8)
 
 text(-0.7, 0.17, "q, R", cex=0.8)
+text(0.08, 0.58, "m", cex=0.8, pos=4)
 ```
 </div>
 
@@ -199,276 +200,265 @@ text(-0.7, 0.17, "q, R", cex=0.8)
 
 
 
+## Metacommunity model
 
+<div class='left' style='float:left;width:48%'>
 
+* We are interested in the rate of change in the number of patches/reaches occupied by a focal species $i$. 
+* Unoccupied patches ($h-p$) can be colonised, occupied ones can go extinct.
+* Extinction is determined locally as the combination of intrinsic extinction rate and the effects of species interactions
 
-## OLD
-
-**START HERE**
-**simplify, streamline, harmonize terminology, add picture/diagram**
-**use igraph and flume examples already to draw a network of sites**
-
-$$ \frac{\partial p}{\partial t} = cp \left( h-p \right) - pm$$
-
-This model is non-spatial, assumes infinite dispersal, and all patches are identical in quality.
-
-- $p$: number of occupied patches
-- $c$: colonisation rate
-- $h$: number of available patches
-- $m$: extinction rate
-
-
-
-
-
-## A simple (single-species) metapopulation model
-
-$$ \frac{\partial p}{\partial t} = cp \left( h-p \right) - pm$$
-
-This model is non-spatial, assumes infinite dispersal, and all patches are identical in quality.
-
-- $cp$: colonisation depends on prevalence; more occupancy means more propagules, faster colonisation
-- $h-p$: only unoccupied patches can be colonised
-- $pm$: only occupied patches can experience extinction
-
-
-
-
-## Extending to metacommunities
-
-- For species $i$ competing with a second species $j$
-
-$$ \frac{\partial p_i}{\partial t} = c_i p_i \left( h-p_i \right) - p_i \left( m_{ij}p_j + m_i \right)$$
-
-- Colonisation hasn't changed and is unaffected by competition
-- The extinction rate $m$ now has two components
-
-<p class="bullet2">Competitive exclusion in patches where they co-occur: $m_{ij}p_j$</p>
-<p class="bullet2">Stochastic extinctions that add to extinction everywhere $i$ occurs: $m_i$</p>
-
+$$	\frac{\partial p}{\partial t} = f(q,R) p(\alpha + \beta Q) \left( h-p \right) - p \left( \color{red}{\sum_{j \in S \setminus \left\{i \right\} }{m_{j}p_j}} + m \right) $$
 
 <p class="reference">Hunt, Julia J. F. G., and Michael B. Bonsall. The Effects of Colonization, Extinction and Competition on Co-Existence in Metacommunities. Journal of Animal Ecology, vol. 78, no. 4, 2009, pp. 866–879</p>
 
-## Extending to metacommunities
+</div>
+<div class='right' style='float:left;width:48%'>
+```{r fig.height = 7, fig.width = 7}
+plot(network, layout = layout, edge.arrow.size = 0.2, variable='site_by_species')
+arrows(0, 0.45, -0.35, 0.15, length=0.1)
+text(-0.15, 0.2, expression(alpha + beta * Q), cex=0.8)
 
-For $S$ species in a metacommunity <br/>
-(and where $S \setminus \left\{i \right\}$ is the set of species excluding $i$):
+arrows(-0.35, -0.15, -0.35, 0.07,  length=0.1)
+text(-0.25, -0.1, expression(alpha), cex=0.8)
 
-$$ \frac{\partial p_i}{\partial t} = c_i p_i \left( h-p_i \right) - p_i \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ij}p_j} + m_i \right)$$
-
-
-## Incorporating patch quality
-
-- Goal: include patch quality in a way that allows for feedbacks with reaction-transport model
+text(-0.7, 0.17, "q, R", cex=0.8)
+text(0.08, 0.58, expression(sum(m[j] * p[j]) + m), cex=0.8, pos=4)
+```
+</div>
 
 
-## Incorporating patch quality
 
-- Goal: include patch quality in a way that allows for feedbacks with reaction-transport model
-- For a patch $x$ with habitat quality $q$:
+
+
+## Reaction-transport model
+
+<div class='left' style='float:left;width:48%'>
+* The basic form of this model considers changing resource concentrations within a reach
+
+$$\frac{\partial R}{\partial t} = Rxn + Input - Output$$
+
+</div>
+
+<div class='right' style='float:left;width:48%'>
+```{r fig.height = 7, fig.width = 7}
+network$boundary = function() matrix(seq(0, 1, length.out = 10), ncol=1, dimnames = list(NULL, 'R'))
+state(network) = network$boundary()
+plot(network, layout = layout, edge.arrow.size = 0.2)
+col = scales::col_numeric("PuBu", c(0,1))(state(network))
+legend("bottomleft", legend=round(state(network), 2), fill=col, bty='n', cex=0.7, title="[R]")
+```
+</div>
+
+
+## Reaction-transport model
+
+<div class='left' style='float:left;width:48%'>
+* The basic form of this model considers changing resource concentrations within a reach
+* Transport is fairly simple, includes a lateral term to account for the stream growing with catchment area
+
+$$\frac{\partial R}{\partial t} = Rxn - \color{red}{\frac{QR - \sum(Q_uR_u)}{Al}}$$
+
+</div>
+
+<div class='right' style='float:left;width:48%'>
+```{r fig.height = 7, fig.width = 7}
+plot(network, layout = layout, edge.arrow.size = 0.2)
+legend("bottomleft", legend=round(state(network), 2), fill=col, bty='n', cex=0.7, title="[R]")
+
+## 6 to 4
+arrows(0, 0.45, -0.35, 0.15, length=0.1)
+text(-0.15, 0.2, expression(Q[6]*R[6]), cex=0.8)
+
+## 5 to 4
+arrows(-0.85,0.6, -0.55, 0.35, length=0.1)
+text(-0.75, 0.5, expression(Q[5]*R[5]), cex=0.8, pos=4)
+
+# 4 to 3
+arrows(-0.35, 0.07, -0.35, -0.15,  length=0.1)
+text(-0.25, -0.1, expression(Q[4]*R[4]), cex=0.8)
+
+arrows(-0.85, 0.07, -0.58, 0.15,  length=0.1, lty=3)
+text(-0.95, 0.2, expression((Q[4] - Q[5] - Q[6])*R[l]), cex=0.8)
+```
+</div>
+
+
+## Reaction-transport model
+
+<div class='left' style='float:left;width:48%'>
+* The basic form of this model considers changing resource concentrations within a reach
+* Transport is fairly simple, includes a lateral term to account for the stream growing with catchment area
+* We assume each species has a **reaction function** that, when the species is present, changes R in the patch
+
+$$\frac{\partial R}{\partial t} = \color{red}{\sum{p_i \rho_i(R)}} - \frac{QR - \sum(Q_uR_u)}{Al}$$
+
+</div>
+
+<div class='right' style='float:left;width:48%'>
+```{r fig.height = 7, fig.width = 7}
+plot(network, layout = layout, edge.arrow.size = 0.2)
+legend("bottomleft", legend=round(state(network), 2), fill=col, bty='n', cex=0.7, title="[R]")
+## 6 to 4
+arrows(0, 0.45, -0.35, 0.15, length=0.1)
+arrows(-0.85,0.6, -0.55, 0.35, length=0.1)
+arrows(-0.35, 0.07, -0.35, -0.15,  length=0.1)
+arrows(-0.85, 0.07, -0.58, 0.15,  length=0.1, lty=3)
+text(0, 0.15, expression(QR - sum(Q[u]*R[u])), cex=0.8)
+text(-0.73, 0.25, expression(sum(p[i] * rho[i](R))), cex=0.8)
+
+```
+</div>
+
+
+## Combining the models
+
+* The two models are linked by shared terms
+
+<div class='left' style='float:left;width:48%'>
+$$	\frac{\partial p}{\partial t} = \color{red}{f(q, R)} \color{blue}p(\alpha + \beta Q) \left( h-\color{blue}p \right) - \color{blue}p \left(\sum_{j \in S \setminus \left\{i \right\} }{m_{j}p_j} + m \right) $$
+
+</div>
+
+<div class='right' style='float:left;width:48%'>
+$$\frac{\partial R}{\partial t} = \color{blue}{\sum{p_i \rho_i\color{red}{(R)}}} - \frac{Q\color{red}{R} - \sum(Q_uR_u)}{Al}$$
+</div>
+
+
+
+## Patch quality
 
 \begin{align}
-	\frac{\partial p_{ix}}{\partial t} &= c_{ix} p_{ix} \left( h-p_{ix} \right) - p_{ix} \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ijx}p_{jx}} + m_{ix} \right) \\
-	c_{ix} &= f(q_{ix}) \\
-	m_{ix} &= g(q_{ix})
-\end{align}
-
-- This model is now spatially explicit and incorporates different niches for each species
-- Note that in pratice, it doesn't make sense to talk about a rate for a specific patch, so we convert to probabilities of colonisation/extinction
-
-<p class="reference">Talluto et al. 2017. Nature Ecol. Evol.</p>
-
-## Incorporating patch quality
-
-\begin{align}
-	c_{ix} &= f(q_{ix}) \\
-	m_{ix} &= g(q_{ix})
+	c_{ix} &= f(q_{ix}, R_x) \\
+	m_{ix} &= g(q_{ix}, R_x)
 \end{align}
 
 - $c$ and $m$ functions are flexible
 
 For example, we used them to link C-E dynamics to climate:
 
-![](img/respCurve.png){ width=30% } ![](img/stm_equilib.png){ width=30% }
+In *flume*, we only model colonisation as a function of quality, intrinsic extinction $m_i$ is constant with respect to the environment. 
 
+![](img/respCurve.png){ width=30% } ![](img/stm_equilib.png){ width=30% }
 <p class="reference">Talluto et al. 2017. Nature Ecol. Evol.</p>
 
 
-## Adding Feedbacks
-
-<center>
-![](img/mot5.png){width=80%}
-</center>
-
-
-
-## Adding Feedbacks
-
-- Starting with a reaction transport model with state variable $R$ (a resource)
-- Include a **resource use function**, $\rho_i(R)$, which is the effect of species $i$ on the resource
-
-\begin{align}
-	\frac{\partial R}{\partial t} &= \sum_{i \in S}{\rho_i(R)} -\frac{QR - Q_u R_u}{A dx}
-\end{align}
 
 
 
 
-## Adding Feedbacks
+## Patch quality reflects species' niches
 
-- Starting with a reaction transport model with state variable $R$ (a resource)
-- Include a **resource use function**, $\rho_i(R)$, which is the effect of species $i$ on the resource
+<div class='left' style='float:left;width:48%'>
 
+* Niches take a gaussian shape, distributed along the resource/environmental gradient
 
-\begin{align}
-	\frac{\partial R}{\partial t} &= \sum_{i \in S}{\rho_i(R)} -\frac{QR - Q_u R_u}{A dx} \\
-	\frac{\partial p_{ix}}{\partial t} &= c_{ix} p_{ix} \left( h-p_{ix} \right) - p_{ix} \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ijx}p_{jx}} + m_{ix} \right) \\
-	c_{ix} &= f(q_{ix}) \\
-	m_{ix} &= g(q_{ix}) \\
-	q_{ix} &= F_i(R_x)
-\end{align}
+$$	\frac{\partial p}{\partial t} = \color{red}{f(q, R)} p(\alpha + \beta Q) \left( h-p \right) - p \left(\sum_{j \in S \setminus \left\{i \right\} }{m_{j}p_j} + m \right) $$
+$$\frac{\partial R}{\partial t} = \sum{p_i \rho_i(R)} - \frac{QR - \sum(Q_uR_u)}{Al}$$
 
 
-## Adding Feedbacks
+</div>
 
-- Starting with a reaction transport model with state variable $R$ (a resource)
-- Include a **resource use function**, $\rho_i(R)$, which is the effect of species $i$ on the resource
+<div class='right' style='float:left;width:48%'>
+```{r fig.height = 7, fig.width = 7}
 
-
-\begin{align}
-	\frac{\partial R}{\partial t} &= \sum_{i \in S}{\rho_i(R)} -\frac{QR - Q_u R_u}{A dx} \\
-	\frac{\partial p_{ix}}{\partial t} &= c_{ix} p_{ix} \left( h-p_{ix} \right) - p_{ix} \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{ijx}p_{jx}} + m_{ix} \right) \\
-	c_{ix} &= f(q_{ix}) \\
-	m_{ix} &= g(q_{ix}) \\
-	q_{ix} &= F_i(R_x)
-\end{align}
-
--Two questions remain:
-
-<p class="bullet2">How to define the strength of competition $m_{ix}$?</p>
-<p class="bullet2">How to connect patch quality $q$ with resources $R$?</p>
+mcom = metacommunity(n_species = 3, nx = 1)
+plot(mcom, ylab = "Performance", yaxt='n', bty='l', lwd=3, xaxt='n', cex.lab=2, mgp=c(2,0.5,0))
+```
+</div>
 
 
+## Patch quality reflects species' niches
+
+<div class='left' style='float:left;width:48%'>
+
+* Niches take a gaussian shape, distributed along the resource/environmental gradient
+* Height of the curve for a resource concentration of a given site gives the "quality" term
+* This height also determines resource use (species consume more in optimal environments)
+
+$$	\frac{\partial p}{\partial t} = \color{red}{f(q, R)} p(\alpha + \beta Q) \left( h-p \right) - p \left(\sum_{j \in S \setminus \left\{i \right\} }{m_{j}p_j} + m \right) $$
+
+$$\frac{\partial R}{\partial t} = \color{red}{\sum{p_i \rho_i(R)}} - \frac{QR - \sum(Q_uR_u)}{Al}$$
 
 
-## Patch Quality
+</div>
 
-Imagine that $R$ represents, instead of a point value, a *distribution* of resources in a patch
+<div class='right' style='float:left;width:48%'>
+```{r fig.height = 7, fig.width = 7}
 
-```{r fig.align = "center"}
-suppressWarnings(library(ggplot2))
-suppressWarnings(library(data.table))
-suppressWarnings(library(RColorBrewer))
-
-xl <- -9
-xu <- 9
-
-x <- seq(xl, xu, length.out=1000)
-
-# set up colors
-lpal <- c(brewer.pal(6, "Blues")[4:6], "#cb181d", "#6A2444", "#4d004b")
-fpal <- paste0(lpal, "77")
-fpal2 <- paste0(lpal, c(rep('22', 4), '77', '77'))
-names(lpal) <- names(fpal) <- names(fpal2) <- c(paste0("s", 1:3), 'r', 's2_r', 's1_r')
+plot(mcom, ylab = "Performance", yaxt='n', bty='l', lwd=3, xaxt='n', cex.lab=2, mgp=c(2,0.5,0))
+abline(v = 0.4, lwd=2)
+points(rep(0.4, 3), f_niche(mcom, 0.4), pch=21, cex=2, bg = c("#a6cee3", "#1f78b4", "#b2df8a"))
+```
+</div>
 
 
-fs1 <- function(x) dnorm(x, -2, 2)
-fs2 <- function(x) dnorm(x, 0, 2)
-fs3 <- function(x) dnorm(x, 2, 2)
-fr <- function(x) dnorm(x, 2, 2)
 
-## point where sp2 and resources cross
-xpt_r_sp2 <- uniroot(function(x) fs2(x) - fr(x), c(xl, xu))$root
 
-dat <- data.table(x = x)
-dat[,c("s1", "s2", "s3", "r") := .(fs1(x), fs2(x), fs3(x), fr(x))]
+## Species similarity determines competition
 
-pl0 <- ggplot(dat) + theme_minimal() + 
-	scale_y_continuous(name="Density/Fitness", limits = c(0, max(dat$s1,dat$s2, dat$s3))) + 
-	scale_x_continuous(name="Resource Value", limits = c(xl, xu)) + 
-	theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(), 
-		axis.text.y=element_blank(), axis.ticks.y=element_blank())
+<div class='left' style='float:left;width:48%'>
 
-pl_r <- pl0 + geom_polygon(aes(x=x, y=r), color=lpal["r"], fill=fpal["r"]) 
-pl_r
+* Niches take a gaussian shape, distributed along the resource/environmental gradient
+* Height of the curve for a resource concentration of a given site gives the "quality" term
+* This height also determines resource use (species consume more in optimal environments)
+* Overlap in curves determines intensity of competition
+
+$$	\frac{\partial p}{\partial t} = f(q, R) p(\alpha + \beta Q) \left( h-p \right) - p \left(\color{red}{\sum_{j \in S \setminus \left\{i \right\} }{m_{j}p_j}} + m \right) $$
+$$\frac{\partial R}{\partial t} = \color{red}{\sum{p_i \rho_i(R)}} - \frac{QR - \sum(Q_uR_u)}{Al}$$
+
+</div>
+
+<div class='right' style='float:left;width:48%'>
+```{r fig.height = 7, fig.width = 7}
+
+# find sp3 zero, cross, sp2 zero
+sp2 = mcom$species[[2]]
+sp3 = mcom$species[[3]]
+st = uniroot(function(x) f_niche(sp3, x) + 0.04, c(0,0.5))$root
+mid = uniroot(function(x) f_niche(sp2, x) - f_niche(sp3, x), c(st,0.8))$root
+en = uniroot(function(x) f_niche(sp2, x) + 0.04, c(mid,1))$root
+
+# compute polygon coordinates
+pgx1 = seq(st, mid, 0.02)
+pgx2 = seq(mid, en, 0.02)
+pgx3 = seq(en, st, -0.02)
+pgy = c(f_niche(sp3, pgx1), f_niche(sp2, pgx2), rep(-0.04, length(pgx3)))
+
+plot(mcom, ylab = "Performance", yaxt='n', bty='l', lwd=3, xaxt='n', cex.lab=2, mgp=c(2,0.5,0))
+polygon(c(pgx1, pgx2, pgx3), pgy, col="#69AC9Faa", border=NA)
+par(new=TRUE)
+plot(mcom, ylab = "Performance", yaxt='n', bty='l', lwd=3, xaxt='n', cex.lab=2, mgp=c(2,0.5,0))
+
 
 ```
-
-
-## Patch Quality
-
-Similarly, a species' niche can be characterized by a gaussian fitness function $\omega_i(R)$, showing how well it does under certain resource regimes
-
-```{r fig.align = "center"}
-
-pl_sp2 <- pl0 + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"]) 
-pl_sp2
-```
-
-
-
-## Patch Quality
-
-Patch quality $q_{ix}$ then is the overlap between the resource distribution $R_x$ and the fitness function $\omega_i(R)$
-
-
-```{r fig.align = "center"}
-## note, this is easy to compute. If both are probability distributions with PDF f(x) and g(x) and CDFs F(x) and G(x), and they cross at x = c
-## then the overlap area is just 1 - F(c) + G(c), assuming F(x) is the left curve
-
-pl_s2_r <- pl_r + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"])
-pl_s2_r
-```
-
-
-## Patch Quality
-
-Patch quality $q_{ix}$ then is the overlap between the resource distribution $R_x$ and the fitness function $\omega_i(R)$
-
-
-```{r fig.align = "center"}
-dat.overlap <- data.table(x = x)
-dat.overlap[,y := fr(x)]
-dat.overlap[x >= xpt_r_sp2, y := fs2(x)]
-pl_s2_r_ol <- pl0 + geom_polygon(aes(x=x, y=r), color=lpal["r"], fill=fpal2["r"]) + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal2["s2"]) + 
-	geom_polygon(dat = dat.overlap, aes(x=x, y=y), color=lpal["s2_r"], fill=fpal["s2_r"]) 
-pl_s2_r_ol
-```
+</div>
 
 
 
 
 
-## Competition
 
-- The strength of competition is similar
-
-## Competition
-
-- The strength of competition is similar
-- For species $i$ and $j$ with fitness functions $\omega_i(R)$ and $\omega_j(R)$, the overlap between the functions is competition strength $m_{ij}$
-
-```{r fig.align = "center"}
-
-pl_sp1_sp2 <- pl0 + geom_polygon(aes(x=x, y=s1), color=lpal["s1"], fill=fpal["s1"]) + geom_polygon(aes(x=x, y=s2), color=lpal["s2"], fill=fpal["s2"]) 
-pl_sp1_sp2
-```
+## Running the simulation
 
 
 
-## Dispersal
-<!-- note here; one possibility is to use quality q_ix as a proxy for how much the species uses -->
-<!-- then change the mean of the resources by some amount, proportional to the overlap -->
-<!-- thus species that are in good quality patches will have a bigger effect (they are more abundant) -->
-<!-- \mu_new = \mu_old + q_ix * \alpha -->
-<!-- where alpha is the maximal effect of the species on the resource -->
-<!-- This might also be something to go to the literature on, or ask Ruben/Gabriel  -->
 
-- The metapopulation model has the colonisation term $c_{ix}p_{ix}$
-- The $p$ term represents dispersal
-- To better represent dispersal in streams we can add active ($\alpha$) and passive ($\beta$) dispersal
 
-$$ p_{ix}\left(\alpha_i + \sum{Q_y\beta_i}\right)$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## To-do

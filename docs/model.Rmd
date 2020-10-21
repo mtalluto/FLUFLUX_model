@@ -19,6 +19,9 @@ knitr::opts_chunk$set(fig.width=5.5, fig.height=5.5, collapse = TRUE, comment = 
 # library(flume)
 devtools::load_all("~/work/packages/flume")
 library(igraph)
+library(network)
+library(ggnetwork)
+library(gganimate)
 ```
 
 
@@ -82,7 +85,7 @@ Across an entire river network:
 $$\frac{\partial p}{\partial t} = cp(h-p) - mp$$
 </div>
 
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 
 ```{r fig.height = 7, fig.width = 7}
 Q = c(13,12,8,7,1,4,1,1,2,1)
@@ -109,7 +112,7 @@ plot(network, layout = layout, edge.arrow.size = 0.2, variable='site_by_species'
 
 $$\frac{\partial p}{\partial t} = cp(\alpha + \color{red}{\beta Q})(h-p) - mp$$
 </div>
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 plot(network, layout = layout, edge.arrow.size = 0.2, variable='site_by_species')
 arrows(0, 0.45, -0.35, 0.15, length=0.1)
@@ -128,7 +131,7 @@ text(-0.15, 0.2, expression(beta * Q), cex=0.8)
 
 $$\frac{\partial p}{\partial t} = cp(\color{red} \alpha + \beta Q)(h-p) - mp$$
 </div>
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 plot(network, layout = layout, edge.arrow.size = 0.2, variable='site_by_species')
 arrows(0, 0.45, -0.35, 0.15, length=0.1)
@@ -154,7 +157,7 @@ text(-0.25, -0.1, expression(alpha), cex=0.8)
 
 $$\frac{\partial p}{\partial t} = \color{red}{f(q,R)}p(\alpha + \beta Q)(h-p) - mp$$
 </div>
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 plot(network, layout = layout, edge.arrow.size = 0.2, variable='site_by_species')
 arrows(0, 0.45, -0.35, 0.15, length=0.1)
@@ -179,7 +182,7 @@ text(-0.7, 0.17, "q, R", cex=0.8)
 
 $$	\frac{\partial p}{\partial t} = f(q,R) p(\alpha + \beta Q) \left( h-p \right) - p \left( \sum_{j \in S \setminus \left\{i \right\} }{m_{j}p_j} + \color{red}m \right) $$
 </div>
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 plot(network, layout = layout, edge.arrow.size = 0.2, variable='site_by_species')
 arrows(0, 0.45, -0.35, 0.15, length=0.1)
@@ -213,7 +216,7 @@ $$	\frac{\partial p}{\partial t} = f(q,R) p(\alpha + \beta Q) \left( h-p \right)
 <p class="reference">Hunt, Julia J. F. G., and Michael B. Bonsall. The Effects of Colonization, Extinction and Competition on Co-Existence in Metacommunities. Journal of Animal Ecology, vol. 78, no. 4, 2009, pp. 866–879</p>
 
 </div>
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 plot(network, layout = layout, edge.arrow.size = 0.2, variable='site_by_species')
 arrows(0, 0.45, -0.35, 0.15, length=0.1)
@@ -240,7 +243,7 @@ $$\frac{\partial R}{\partial t} = Rxn + Input - Output$$
 
 </div>
 
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 network$boundary = function() matrix(seq(0, 1, length.out = 10), ncol=1, dimnames = list(NULL, 'R'))
 state(network) = network$boundary()
@@ -261,7 +264,7 @@ $$\frac{\partial R}{\partial t} = Rxn - \color{red}{\frac{QR - \sum(Q_uR_u)}{Al}
 
 </div>
 
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 plot(network, layout = layout, edge.arrow.size = 0.2)
 legend("bottomleft", legend=round(state(network), 2), fill=col, bty='n', cex=0.7, title="[R]")
@@ -295,7 +298,7 @@ $$\frac{\partial R}{\partial t} = \color{red}{\sum{p_i \rho_i(R)}} - \frac{QR - 
 
 </div>
 
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 plot(network, layout = layout, edge.arrow.size = 0.2)
 legend("bottomleft", legend=round(state(network), 2), fill=col, bty='n', cex=0.7, title="[R]")
@@ -320,7 +323,7 @@ $$	\frac{\partial p}{\partial t} = \color{red}{f(q, R)} \color{blue}p(\alpha + \
 
 </div>
 
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 $$\frac{\partial R}{\partial t} = \color{blue}{\sum{p_i \rho_i\color{red}{(R)}}} - \frac{Q\color{red}{R} - \sum(Q_uR_u)}{Al}$$
 </div>
 
@@ -359,7 +362,7 @@ $$\frac{\partial R}{\partial t} = \sum{p_i \rho_i(R)} - \frac{QR - \sum(Q_uR_u)}
 
 </div>
 
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 
 mcom = metacommunity(n_species = 3, nx = 1)
@@ -383,7 +386,7 @@ $$\frac{\partial R}{\partial t} = \color{red}{\sum{p_i \rho_i(R)}} - \frac{QR - 
 
 </div>
 
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 
 plot(mcom, ylab = "Performance", yaxt='n', bty='l', lwd=3, xaxt='n', cex.lab=2, mgp=c(2,0.5,0))
@@ -409,7 +412,7 @@ $$\frac{\partial R}{\partial t} = \color{red}{\sum{p_i \rho_i(R)}} - \frac{QR - 
 
 </div>
 
-<div class='right' style='float:left;width:48%'>
+<div class='right' style='float:right;width:48%'>
 ```{r fig.height = 7, fig.width = 7}
 
 # find sp3 zero, cross, sp2 zero
@@ -439,33 +442,206 @@ plot(mcom, ylab = "Performance", yaxt='n', bty='l', lwd=3, xaxt='n', cex.lab=2, 
 
 
 
-## Running the simulation
+## Setting up the simulation: species pool
+
+For a simple example, we set up a species pool of 3 species, adapted for low, mid, and high resource concentration. We give each species a high active dispersal capability (alpha)
+
+```{r echo = TRUE, fig.height = 7, fig.width = 7}
+
+## nx is the number of resource dimensions; by default resources are scaled from zero to 1
+mcom = metacommunity(n_species = 3, nx = 1, alpha = 2)
+plot(mcom)
+
+
+```
 
 
 
 
 
+## Setting up the simulation: river network
+
+Then we set up a river network, by hand (for now). We set it up so that there are two subcatchments, one with low and one with high resources.
+
+```{r echo = TRUE, fig.height = 7, fig.width = 7}
+nsites = 17
+# an adjacency matrix; adj[i,j] == 1 indicates that i is upstream of j
+adj = matrix(0, nrow=nsites, ncol=nsites)
+adj[2,1] = adj[3,2] = adj[4,3] = adj[5,4] = adj[6,5] = adj[7,6] = adj[8,6] = adj[9,5] = adj[10,9] = 
+   adj[11,3] = adj[12,11] = adj[13,12] = adj[14,13] = adj[15,13] = adj[16,12] = adj[17,16] = 1
+
+# we also define a layout to make plotting nice
+layout = matrix(c(0,0, 0,1, 0,2, -1,3, -2,4, -3,5, -4,6, -2,6, -2,5, -1,6, 1,3, 2,4, 3,5, 4,6, 2,6, 2,5, 1,6), 
+                  byrow=TRUE, nrow=nsites)
+
+## we need the discharge at every node
+## define as 1 for headwaters, add 1 for every reach
+Q = c(18,17,16,7,6,2,1,1,2,1,7,6,2,1,1,2,1)
+
+# and we need starting resource concentrations and species distributions
+R = matrix(c(0.5,0.5,0.5,0.75,0.8,0.95,1,1,0.9,1,0.25,0.2,0.05,0,0,0.1,0), ncol=1, dimnames = list(1:17, 'R'))
+```
+
+
+## Setting up the simulation: river network
+
+Then we set up a river network, by hand (for now). We set it up so that there are two subcatchments, one with low and one with high resources.
+
+<div class='left' style='float:left;width:48%'>
+
+```{r echo = TRUE, fig.height = 7, fig.width = 7, fig.show='hide'}
+network = river_network(adjacency = adj, discharge = Q)
+# we need boundary conditions for resources
+network$boundary = function() return(R)
+state(network) = R
+
+plot(network, variable = 'R', layout = layout, edge.arrow.size = 0.2, edge.width = 20)
+
+## TODO: add the legend automatically :-)
+col = scales::col_numeric("PuBu", c(0,1))(seq(0, 1, 0.1))
+legend("bottomleft", legend=round(seq(0, 1, 0.1), 2), fill=col, bty='n', cex=0.7, title="[R]")
+```
+</div>
+
+<div class='right' style='float:right;width:48%'>
+```{r echo = FALSE, fig.height = 7, fig.width = 7}
+plot(network, variable = 'R', layout = layout, edge.arrow.size = 0.2, edge.width = 20)
+legend("bottomleft", legend=round(seq(0, 1, 0.1), 2), fill=col, bty='n', cex=0.7, title="[R]")
+```
+
+</div>
+
+
+
+## Setting up the simulation: species distributions
+
+For starting species distributions, we choose to start them anywhere the fundamental niche is greater than zero
+
+
+```{r echo = TRUE, fig.height = 7, fig.width = 12, fig.show='hide'}
+S = (f_niche(mcom, R) > 0) * 1
+## TODO: find out why these column names get messed up
+colnames(S) = c("low", "mid", "high")
+site_by_species(network) = S
+par(mar=c(0,0,0,0))
+plot(network, variable = "site_by_species", layout = layout, 
+     edge.arrow.size = 0.2, edge.width = 20)
+```
+
+```{r echo = FALSE, fig.height = 7, fig.width = 12}
+plot(network, variable = "site_by_species", layout = layout, edge.arrow.size = 0.2, edge.width = 20)
+```
+
+
+
+## Setting up and running a FLUME
+
+* A simulation requires species pool, a river network, and a time step duration. 
+* `flume` works in discrete time; this means that integration methods must also be chosen (there are defaults)
+* By default, col/ext rates are converted to probabilities over a single time step
+
+<div class='left' style='float:left;width:48%'>
+
+```{r echo = TRUE, fig.height = 7, fig.width = 7, fig.show='hide'}
+sim = flume(mcom, network, dt = 1)
+set.seed(45580085)
+sim = run_simulation(sim, nt = 100)
+plot(sim, variable = "occupancy", type="network")
+```
+</div>
+
+<div class='right' style='float:right;width:48%'>
+```{r echo = FALSE, fig.height = 7, fig.width = 7}
+plot(sim, variable = "occupancy", type="network")
+```
+</div>
+
+## Resource evolution in time
+
+<div class='left' style='float:left;width:48%'>
+```{r echo = FALSE, fig.height = 7, fig.width = 7}
+plot(sim, variable = "resources", type="reach")
+```
+</div>
+
+<div class='right' style='float:right;width:48%'>
+```{r echo = FALSE, fig.height = 7, fig.width = 7}
+
+rn = sim$networks[[1]]
+Q = as.vector(discharge(rn) * adjacency(rn))
+Q = Q[Q!=0]
+rnn = network(adjacency(rn) * discharge(rn))
+set.edge.attribute(rnn, "Q", Q)
+st = state(rn, history=TRUE)
+nws = mapply(function(x, n) {
+   set.vertex.attribute(n, "R", as.vector(x))
+   ggnetwork(n, layout=layout)
+}, x=st, MoreArgs = list(n=rnn), SIMPLIFY = FALSE)
+nws = rbindlist(nws, idcol='time')
+pl = ggplot(nws, aes(x = x, y = y, xend = xend, yend = yend)) + 
+   geom_edges(aes(size=Q), colour="gray50") + 
+   theme_blank() + geom_nodes(aes(color=R), size=6) + 
+   scale_color_continuous(low = "#b4dcfb", high = "#091a2c", limits=range(rn$.state)) + 
+   transition_time(time) + labs(title = "Time: {frame_time}") + 
+   geom_nodetext(aes(label = vertex.names))
+animate(pl)
+```
+</div>
 
 
 
 
+## Species 1 was the only survivor!
+
+<div class='left' style='float:left;width:48%'>
+
+```{r echo = FALSE, fig.height = 7, fig.width = 7}
+
+S = site_by_species(rn, history=TRUE)
+nws = mapply(function(x, n) {
+   set.vertex.attribute(n, "low", x[,'low'])
+   set.vertex.attribute(n, "mid", x[,'mid'])
+   set.vertex.attribute(n, "high", x[,'high'])
+   ggnetwork(n, layout=layout)
+}, x=S, MoreArgs = list(n=rnn), SIMPLIFY = FALSE)
+nws = rbindlist(nws, idcol='time')
+nws$low = factor(nws$low)
+pl = ggplot(nws, aes(x = x, y = y, xend = xend, yend = yend)) + 
+   geom_edges(aes(size=Q), colour="gray50") + 
+   theme_blank() + 
+   geom_nodes(aes(fill=low), pch=21, colour="black", size=6) + 
+   scale_fill_discrete(type = c("#ffffff", "#1f78b4")) + 
+   transition_time(time) + 
+   labs(title = "Sp1, Time: {frame_time}") + 
+   geom_nodetext(aes(label = vertex.names))
+
+animate(pl, fps=5)
+```
+</div>
+
+<div class='right' style='float:right;width:48%'>
+
+```{r echo = FALSE, fig.height = 7, fig.width = 7}
+nws$mid = factor(nws$mid)
+pl = ggplot(nws, aes(x = x, y = y, xend = xend, yend = yend)) + 
+   geom_edges(aes(size=Q), colour="gray50") + 
+   theme_blank() + 
+   geom_nodes(aes(fill=mid), pch=21, colour="black", size=6) + 
+   scale_fill_discrete(type = c("#ffffff", "#33a02c")) + 
+   transition_time(time) + 
+   labs(title = "Sp2, Time: {frame_time}") + 
+   geom_nodetext(aes(label = vertex.names))
+animate(pl, fps=5)
+```
+</div>
 
 
+## Next steps
 
+* Debug, improve and finalize interface
+* Challenge the model with scenarios
+   * in particular, find decent parameter combos as starting points!
+* Decide on a few (2-3) hypotheses/scenarios to explore
+* Finish the paper
 
-
-
-
-
-
-
-
-
-## To-do
-
-
-### Revise \& finalise model
-<p class="bullet2">How does a species affect resources in a patch? Need to choose the resource use function  $\rho_i(R)$</p>
-
-### Decide on starting conditions
-### Decide on scenarios and hypotheses
+[The model](https://github.com/mtalluto/flume) and [the manuscript](https://github.com/mtalluto/FME_model_ms) are available online! 

@@ -73,7 +73,14 @@
 		
 		Thus, the properties of this hierarchical structure can strongly influence how ecosystem components are distributed in space via (i) structured spatial heterogeneity in resource supply (deriving, e.g., from structure in the surrounding terrestrial landscape), (ii) spatially variable temporal synchronicity (e.g., variable flow affecting portions of the network asymmetrically), and (iii) constrained avenues for dispersal of organisms \autocite{Helton2018,BENDA2004,Heino2015}.
 		
-		This hierarchical branching structure that dictates the movement of material and species can produce both quantitative and qualitative changes in the predictions of models when compared with terrestrial systems. 
+        Comments from Ruben about previous: This paragraph is very complex to me. Each point should be briefly explained to make sure the reader gets how RN features affect the spatial distribution of resources and organisms.I am not sure how to improve this, but maybe a more simple option would be to explain that the spatial distribution of resources and organisms are driven by different mechanisms: A) Resources: Depend on surrounding terrestrial landscape and are distributed by passive transport. B) Consumers: Depend on environmental filters and neutral processes (dispersal vs extinction). Some organisms have even active dispersal capacities and can recolonize upstream habitats. Actually, if using this approach, this paragraph´d help to introduce and justify the use of the reaction-transport model and meta-ecosystem model in the paper. Finally, after this paragraph, I think it´s necessary to give the reader an idea about the potential implications of the different spatial distribution of resources/consumers. For instance, introduce a little bit the concept of match/mismatch of diversity of resources and consumers and how this can affect to emergent properties of the ecosystem as productivity or functioning.
+
+
+
+
+		
+		
+		This hierarchical branching structure that dictates the movement of material and species (NOTE - some consistency throughout is needed for this) can produce both quantitative and qualitative changes in the predictions of models when compared with terrestrial systems. 
 		
 		For example, branching structure may promote ecosystem stability and act as a buffer against environmental change \autocite{Terui2018}.
 		
@@ -91,7 +98,7 @@
 		By linking these two models, we allow for feedbacks between the biological community and resources.
 		These feedbacks are essential to enable a more mechanistic understanding of the connections between the processes underlying community assembly, resulting biodiversity patterns, and ecosystem function.
 		Moreover, the spatial structure of the river network allows us to test emergent properties related to the structure of the network.
-		For example, changes to network structure via damming or due to droughts can be evaluated in-silico, or theoretical predictions such as the relationship between branching complexity and ecosystem stability \autocite{Terui2018} can be evaluated.}
+		For example, changes to network structure via damming or due to flow intermittency can be evaluated in-silico, or theoretical predictions such as the relationship between branching complexity and ecosystem stability \autocite{Terui2018} can be evaluated.}
 \end{itemize}
 
 
@@ -122,7 +129,7 @@ For future clarity of notation, we assume all parameters are specific to a targe
 
 An important aspect of metacommunity dynamics is dispersal, which in the classic model is incorporated into the colonisation term using the prevalence $p_i$.
 In rivers, hydrological connections among habitat patches facilitates passive dispersal in the water (cite).
-However, many organisms are capable of active dispersal, either overland or upstream along the streambed, and even organisms that cannot move themselves can be carried upstream by various properties (cite).
+However, many organisms are capable of active dispersal, either overland or upstream along the streambed, and even organisms that cannot move themselves can be carried upstream by various properties (cite). (fuss: Kristiansen 1996 in Hydrobiologia (DOI 10.1007/BF00010829) reviews dispersal ways of freshwater algae. E.g. wind, animals, humans)
 For simplicity, we refer to all of these forms of dispersal as “active” dispersal.
 Because these two dispersal mechanisms are likely to occur at quite different rates, and because the rates will likely vary among different types of organisms, we break the dispersal portion of the colonisation term here into active ($\alpha$) and passive ($\beta$) components, with the passive component additionally weighted by the discharge $Q$:
 
@@ -155,7 +162,7 @@ We can use a simple reaction-transport model \autocite{Soetaert2009} to describe
 	\label{eq:rxn_transport}
 \end{equation}
 The right-hand term here gives loss due to advective transport, where $Q$ is the discharge of the focal patch (in volumetric units per unit time; we use m$^3$ s$^{-1}$ throughout), $Q_u$ and $R_u$ are discharge and resource concentrations of upstream patches (including lateral input, if relevant), $A$ is the cross-sectional area (m$^2$), and $l$ is the stream length of the patch (m).
-The left-hand term is the reaction component.
+The left-hand term is the reaction component. (rubendel.campo: Question. Functions as organic carbon degradation rely greatly on water residence time. The higher the residence time, the higher can be the rate. So, I am wondering, should be the reaction component weighed also by Q? Or, is the right term of the equation considering the effect of residence time already? I.e.: the higher Q, the higher the downstream transport, and therefore, the lower the reaction component?)
 We consider here only reaction due to biological activity, and postulate that the net reactive change in a patch is the sum of a set of resource use functions, $\rho_i(R)$, of all species $S$ in the local community. 
 Each $\rho_i$ function describes the impact of a species on the resource; the forms of these functions will depend on which resources are being modelled.
 We provide examples of possible functions in the case studies.
@@ -210,6 +217,9 @@ This is a convenient example, as the N:P ratio is known to be quite important in
 \subsubsection{Adding a habitat/niche dimension? (for Gabriel)}
 
 \subsubsection{Vjosa case study?}
+
+lukas.thuilebistarelli: I'm not sure if that fits well, but bacterial community composition and catchment area show a nice link. Also it seems like mean div is increasing and SD is decreasing with catchment area. We actually did also a bit of this modelling in rstan. Could be a nice add on an. And if wanted we could link it to bacterial functioning as well.
+
 
 \section{Results}
 
